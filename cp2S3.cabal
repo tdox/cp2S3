@@ -1,0 +1,29 @@
+name:                cp2S3
+version:             0.1.0.0
+-- synopsis:            
+-- description:         
+license:             BSD3
+license-file:        LICENSE
+author:              Tad Doxsee
+maintainer:          doxsee@pacbell.net
+copyright:           Tad Doxsee
+-- category:            
+build-type:          Simple
+-- extra-source-files:  
+cabal-version:       >=1.10
+
+executable cp2S3
+  main-is:             cp2S3.hs
+  -- other-modules:       
+  -- other-extensions:    
+  build-depends:         base          >= 4.6  && < 4.7
+                       , aws           >= 0.8  && < 0.9
+                       , bytestring    >= 0.10 && < 0.11
+                       , containers    >= 0.5  && < 0.6
+                       , directory     >= 1.2  && < 1.3
+                       , filepath      >= 1.3  && < 1.4
+                       , http-conduit  >= 2.0  && < 2.1
+                       , text          >= 1.1  && < 1.2
+                       , transformers  >= 0.3  && < 0.4
+  -- hs-source-dirs:      
+  default-language:    Haskell2010
