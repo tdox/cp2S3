@@ -8,7 +8,11 @@
 --           AWS S3 bucket. Only files that are not already in the bucket
 --           will be copied to the bucket.
 --
---  Usage: cp2S3 dirName bucketName
+--  Usage: cp2S3 dirName bucketName [nameFilter]
+--
+--         nameFilter is an optional argument. If given, then only the files
+--         whose name contains the substring nameFilter will be put into
+--         the bucket.
 --
 --         Also, there must be the file $HOME/.aws-keys with valid AWS access
 --         and secret keys in this format
@@ -24,6 +28,8 @@
 
 -- base
 import Control.Monad      (forM_, void, when)
+import Data.List          (isInfixOf)
+import Data.Maybe         (fromJust, isNothing)
 import System.Environment (getArgs)
 import System.Exit        (exitFailure)
 
@@ -59,17 +65,25 @@ main = do
   
   args <- getArgs
   
-  when (length args /= 2) $ do
-    putStrLn "usage: cp2S3 dirName bucketName"
+  let nArgs = length args
+  
+  when (nArgs /= 2 && nArgs /= 3) $ do
+    putStrLn "usage: cp2S3 dirName bucketName [nameFilter]"
     exitFailure
     
-  let dirName = args !! 0
-      bkt     = pack $ args !! 1
+  let dirName     = args !! 0
+      bkt         = pack $ args !! 1
+      mNameFilter = if nArgs == 3 then Just (args !! 2) else Nothing
   
   names <- getDirectoryContents dirName
   
-  let fileNames = filter (`notElem` [".", ".."]) names
-      paths = map (dirName </>) fileNames
+  let fileNames0 = filter (`notElem` [".", ".."]) names
+      
+      fileNames1 = if isNothing mNameFilter
+                   then fileNames0
+                   else filter (isInfixOf (fromJust mNameFilter)) fileNames0
+      
+      paths = map (dirName </>) fileNames1
   
   -- set up AWS credentials and the default configuration.
   cfg <- Aws.baseConfiguration
